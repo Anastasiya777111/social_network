@@ -1,23 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useForm } from "react-hook-form";
+import { useSelector } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
-import { registration } from "../redux/actions/authAction.jsx";
-
+import "../styles/auth.scss";
 const Registration = () => {
-  const { auth, alert } = useSelector((state) => state);
-  const dispatch = useDispatch();
+  const { auth } = useSelector((state) => state);
   const history = useNavigate();
 
-  const initialState = {
-    fullname: "",
-    username: "",
-    email: "",
-    password: "",
-    cf_password: "",
-    gender: "male",
-  };
-  const [userData, setUserData] = useState(initialState);
-  const { fullname, username, email, password, cf_password } = userData;
+  const { register, handleSubmit } = useForm({
+    defaultValues: {
+      fullname: "",
+      username: "",
+      email: "",
+      password: "",
+      cf_password: "",
+      gender: "male",
+    },
+  });
 
   const [typePass, setTypePass] = useState(false);
   const [typeCfPass, setTypeCfPass] = useState(false);
@@ -26,57 +25,47 @@ const Registration = () => {
     if (auth.token) history.push("/");
   }, [auth.token, history]);
 
-  const handleChangeInput = (e) => {
-    const { name, value } = e.target;
-    setUserData({ ...userData, [name]: value });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    dispatch(registration(userData));
-  };
-
   return (
     <div className="auth_page">
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit(console.log)}>
         <h3 className="text-uppercase text-center mb-4">World of Friends</h3>
 
         <div className="form-group">
           <label htmlFor="fullname">Full Name</label>
           <input
+            {...register("fullname", { required: true })}
             type="text"
             className="form-control"
             id="fullname"
             name="fullname"
-            onChange={handleChangeInput}
-            value={fullname}
-            style={{ background: `${fullname ? "#fd2d6a14" : ""}` }}
           />
         </div>
 
         <div className="form-group">
           <label htmlFor="username">User Name</label>
           <input
+            {...register("username", { minLength: 2 })}
             type="text"
             className="form-control"
             id="username"
             name="username"
-            onChange={handleChangeInput}
-            value={username.toLowerCase().replace(/ /g, "")}
-            style={{ background: `${username ? "#fd2d6a14" : ""}` }}
           />
         </div>
 
         <div className="form-group">
           <label htmlFor="exampleInputEmail1">Email address</label>
           <input
+            {...register("email", {
+              required: "required",
+              pattern: {
+                value: /\S+@\S+\.\S+/,
+                message: "Entered value does not match email format",
+              },
+            })}
             type="email"
             className="form-control"
             id="exampleInputEmail1"
             name="email"
-            onChange={handleChangeInput}
-            value={email}
-            style={{ background: `${email ? "#fd2d6a14" : ""}` }}
           />
         </div>
 
@@ -85,13 +74,17 @@ const Registration = () => {
 
           <div className="pass">
             <input
+              {...register("password", {
+                required: "required",
+                minLength: {
+                  value: 5,
+                  message: "min length is 5",
+                },
+              })}
               type={typePass ? "text" : "password"}
               className="form-control"
               id="exampleInputPassword1"
-              onChange={handleChangeInput}
-              value={password}
               name="password"
-              style={{ background: `${password ? "#fd2d6a14" : ""}` }}
             />
 
             <small onClick={() => setTypePass(!typePass)}>
@@ -105,13 +98,17 @@ const Registration = () => {
 
           <div className="pass">
             <input
+              {...register("cf_password", {
+                required: "required",
+                minLength: {
+                  value: 5,
+                  message: "min length is 5",
+                },
+              })}
               type={typeCfPass ? "text" : "password"}
               className="form-control"
               id="cf_password"
-              onChange={handleChangeInput}
-              value={cf_password}
               name="cf_password"
-              style={{ background: `${cf_password ? "#fd2d6a14" : ""}` }}
             />
 
             <small onClick={() => setTypeCfPass(!typeCfPass)}>
@@ -124,34 +121,31 @@ const Registration = () => {
           <label htmlFor="male">
             Male:{" "}
             <input
+              {...register("male")}
               type="radio"
               id="male"
               name="gender"
-              value="male"
               defaultChecked
-              onChange={handleChangeInput}
             />
           </label>
 
           <label htmlFor="female">
             Female:{" "}
             <input
+              {...register("female")}
               type="radio"
               id="female"
               name="gender"
-              value="female"
-              onChange={handleChangeInput}
             />
           </label>
 
           <label htmlFor="other">
             Other:{" "}
             <input
+              {...register("other")}
               type="radio"
               id="other"
               name="gender"
-              value="other"
-              onChange={handleChangeInput}
             />
           </label>
         </div>

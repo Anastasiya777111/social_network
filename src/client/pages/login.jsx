@@ -1,42 +1,37 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { login } from "../redux/actions/authAction.jsx";
+import { Link} from "react-router-dom";
+import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import "../styles/auth.css";
+import "../styles/auth.scss";
 const Login = () => {
-  const initialState = { email: "", password: "" };
-  const [userData, setUserData] = useState(initialState);
-  const { email, password } = userData;
+  const { register, handleSubmit } = useForm({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
 
   const [typePass, setTypePass] = useState(false);
 
-  const dispatch = useDispatch();
-
-  const handleChangeInput = (e) => {
-    const { name, value } = e.target;
-    setUserData({ ...userData, [name]: value });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    dispatch(login(userData));
-  };
-
   return (
     <div className="auth_page">
-      <form onSubmit={handleSubmit}>
+     <form onSubmit={handleSubmit(console.log)}>
         <h3 className="text-uppercase text-center mb-4">World of Friends</h3>
 
         <div className="form-group">
           <label htmlFor="exampleInputEmail1">Email address</label>
-          <input
+          <input     {...register("email", {
+              required: "required",
+              pattern: {
+                value: /\S+@\S+\.\S+/,
+                message: "Entered value does not match email format",
+              },
+            })}
             type="email"
             className="form-control"
             id="exampleInputEmail1"
             name="email"
             aria-describedby="emailHelp"
-            onChange={handleChangeInput}
-            value={email}
           />
 
           <small id="emailHelp" className="form-text text-muted">
@@ -48,12 +43,16 @@ const Login = () => {
           <label htmlFor="exampleInputPassword1">Password</label>
 
           <div className="pass">
-            <input
+            <input  {...register("password", {
+                required: "required",
+                minLength: {
+                  value: 5,
+                  message: "min length is 5",
+                },
+              })}
               type={typePass ? "text" : "password"}
               className="form-control"
               id="exampleInputPassword1"
-              onChange={handleChangeInput}
-              value={password}
               name="password"
             />
 
@@ -66,7 +65,6 @@ const Login = () => {
         <button
           type="submit"
           className="btn btn-dark w-100"
-          disabled={email && password ? false : true}
         >
           Login
         </button>

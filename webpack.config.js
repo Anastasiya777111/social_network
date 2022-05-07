@@ -44,7 +44,7 @@ const cssLoaders = (extra) => {
 const plugins = () => {
   const base = [
     new HTMLWebpackPlugin({
-      template: "client/public/index.html",
+      template: "public/index.html",
       filename: "index.html",
       minify: {
         collapseWhitespace: isProd,
@@ -85,10 +85,10 @@ const jsLoaders = () => {
 };
 
 module.exports = {
-  context: path.resolve(__dirname, "src"),
+  context: path.resolve(__dirname),
   mode: "development",
   entry: {
-    main: ["@babel/polyfill", "./client/index.jsx"],
+    main: ["@babel/polyfill", "./src/client/index.jsx"],
   },
   output: {
     filename: filename("js"),
